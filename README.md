@@ -85,7 +85,8 @@ npm install
 npm start
 # Accès sur http://localhost:3000
 ```
-
+SECRET_KEY=499985928e8b0a2bc906e79364fda6d77d928f1f7eaca851f592437f91e36c53
+DATABASE_URL=postgresql://biometrics_user:password123@localhost:5432/biometrics_db
 ### 3. Application Mobile
 
 ```bash
