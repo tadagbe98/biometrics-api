@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "BioMetrics",
+    "slug": "biometrics-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#7c3aed"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.landry.biometrics",
+      "infoPlist": {
+        "NSCameraUsageDescription": "BioMetrics utilise la caméra pour mesurer votre fréquence cardiaque via PPG.",
+        "NSMotionUsageDescription": "BioMetrics utilise les capteurs de mouvement pour compter vos pas."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#7c3aed"
+      },
+      "package": "com.landry.biometrics",
+      "permissions": [
+        "CAMERA",
+        "ACTIVITY_RECOGNITION",
+        "BODY_SENSORS",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "BioMetrics utilise la caméra pour mesurer votre fréquence cardiaque."
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "BioMetrics utilise les capteurs de mouvement pour l'activité physique."
+        }
+      ]
+    ]
+  }
+}

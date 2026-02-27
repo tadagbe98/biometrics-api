@@ -1,0 +1,8 @@
+{
+  "short_name": "BioMetrics",
+  "name": "BioMetrics - Données Corporelles",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#6C63FF",
+  "background_color": "#0f0f1a"
+}

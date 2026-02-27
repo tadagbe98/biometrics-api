@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: biometrics_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: biometrics_db
+      POSTGRES_USER: biometrics_user
+      POSTGRES_PASSWORD: password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U biometrics_user -d biometrics_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API FastAPI
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: biometrics_api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://biometrics_user:password123@db:5432/biometrics_db
+      SECRET_KEY: "changez-cette-cle-en-production-biometrics-landry-2026"
+      BASE_URL: "http://localhost:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+volumes:
+  postgres_data:
