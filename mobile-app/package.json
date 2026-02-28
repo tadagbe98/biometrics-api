@@ -22,7 +22,8 @@
     "expo-camera": "~14.1.0",
     "expo-sensors": "~12.9.0",
     "expo-notifications": "~0.27.0",
-    "expo-device": "~5.9.3"
+    "expo-device": "~5.9.3",
+    "expo-av": "~13.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

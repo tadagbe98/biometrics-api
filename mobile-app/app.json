@@ -10,13 +10,16 @@
       "resizeMode": "contain",
       "backgroundColor": "#7c3aed"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.landry.biometrics",
       "infoPlist": {
-        "NSCameraUsageDescription": "BioMetrics utilise la caméra pour mesurer votre fréquence cardiaque via PPG.",
-        "NSMotionUsageDescription": "BioMetrics utilise les capteurs de mouvement pour compter vos pas."
+        "NSCameraUsageDescription": "Utilis\u00e9 pour mesurer la fr\u00e9quence cardiaque via PPG (photopl\u00e9thysmographie).",
+        "NSMotionUsageDescription": "BioMetrics utilise les capteurs de mouvement pour compter vos pas.",
+        "NSMicrophoneUsageDescription": "Utilis\u00e9 pour mesurer la fr\u00e9quence respiratoire via l analyse du souffle."
       }
     },
     "android": {
@@ -27,23 +30,21 @@
       "package": "com.landry.biometrics",
       "permissions": [
         "CAMERA",
-        "ACTIVITY_RECOGNITION",
-        "BODY_SENSORS",
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE"
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE"
       ]
     },
     "plugins": [
       [
         "expo-camera",
         {
-          "cameraPermission": "BioMetrics utilise la caméra pour mesurer votre fréquence cardiaque."
+          "cameraPermission": "BioMetrics utilise la cam\u00e9ra pour mesurer votre fr\u00e9quence cardiaque."
         }
       ],
       [
         "expo-sensors",
         {
-          "motionPermission": "BioMetrics utilise les capteurs de mouvement pour l'activité physique."
+          "motionPermission": "BioMetrics utilise les capteurs de mouvement pour l'activit\u00e9 physique."
         }
       ]
     ]
