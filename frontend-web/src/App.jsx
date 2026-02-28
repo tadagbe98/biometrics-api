@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Dashboard from './pages/Dashboard';
 import AuthPage from './pages/AuthPage';
+import DeveloperPortal from './DeveloperPortal';
 import './styles/app.css';
 
 function PrivateRoute({ children }) {
@@ -29,6 +30,8 @@ function AppRoutes() {
       <Route path="/dashboard" element={
         <PrivateRoute><Dashboard /></PrivateRoute>
       } />
+      {/* Portail développeur — accès public */}
+      <Route path="/dev" element={<DeveloperPortal />} />
       <Route path="/" element={<Navigate to="/dashboard" />} />
     </Routes>
   );
