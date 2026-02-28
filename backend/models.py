@@ -19,6 +19,7 @@ class User(Base):
     consent_given = Column(Boolean, default=False)  # RGPD
 
     measurements = relationship("Measurement", back_populates="user")
+    api_keys = relationship("ApiKey", back_populates="user")
 
 
 class Measurement(Base):
@@ -35,6 +36,20 @@ class Measurement(Base):
     notes = Column(Text, nullable=True)
 
     user = relationship("User", back_populates="measurements")
+
+
+class ApiKey(Base):
+    __tablename__ = "api_keys"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    name = Column(String, nullable=False)          # Nom du projet
+    key = Column(String, unique=True, index=True, nullable=False)  # bm_xxxx...
+    is_active = Column(Boolean, default=True)
+    last_used_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="api_keys")
 
 
 class ShareToken(Base):

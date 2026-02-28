@@ -9,7 +9,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import uvicorn
 from datetime import datetime
 
-from routers import auth, measurements, estimates, users
+from routers import auth, measurements, estimates, users, apikeys
 from database import engine, Base
 
 # Création des tables
@@ -37,6 +37,7 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentification"]
 app.include_router(measurements.router, prefix="/api/v1/measurements", tags=["Mesures"])
 app.include_router(estimates.router, prefix="/api/v1/estimate", tags=["Estimations ML"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Utilisateurs"])
+app.include_router(apikeys.router, prefix="/api/v1/keys", tags=["Clés API"])
 
 @app.get("/")
 def root():

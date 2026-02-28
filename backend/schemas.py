@@ -92,3 +92,29 @@ class ShareOut(BaseModel):
     token: str
     expires_at: datetime
     share_url: str
+
+
+# ---- API Keys ----
+class ApiKeyCreate(BaseModel):
+    name: str
+
+class ApiKeyOut(BaseModel):
+    id: int
+    name: str
+    key: str
+    is_active: bool
+    last_used_at: Optional[datetime]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ApiKeyCreated(BaseModel):
+    id: int
+    name: str
+    key: str
+    created_at: datetime
+    message: str = "Conservez cette clé en sécurité, elle ne sera plus affichée."
+
+    class Config:
+        from_attributes = True
