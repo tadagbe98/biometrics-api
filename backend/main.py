@@ -1,52 +1,79 @@
 """
 BioMetrics API - Mesure de Données Corporelles
 Auteur: TADAGBE LANDRY
-Version: 1.0
+Version: 1.1 - Fix CORS Railway + Vercel
 """
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import uvicorn
+import os
 from datetime import datetime
+import bcrypt
 
-from routers import auth, measurements, estimates, users, apikeys
+from routers import auth, measurements, estimates, users
 from database import engine, Base
 
-# Création des tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="BioMetrics API",
     description="API de mesure de données corporelles - Usage personnel bien-être",
-    version="1.0.0",
+    version="1.1.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc"
 )
 
-# CORS pour React Web et React Native
+# ----------------------------------------------------------------
+# CORS CORRIGÉ
+#
+# PROBLÈME : allow_origins=["*"] + allow_credentials=True
+# → Interdit par la spec CORS (RFC 6454) — le navigateur bloque.
+#
+# SOLUTION : lister explicitement les origines autorisées.
+# Ajoutez votre vraie URL Vercel dans EXTRA_ALLOWED_ORIGINS sur Railway.
+# ----------------------------------------------------------------
+ALLOWED_ORIGINS = [
+    # Dev local
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+]
+
+# Lire les origines supplémentaires depuis la variable d'env Railway
+# Sur Railway : Settings → Variables → ALLOWED_ORIGINS=https://votre-app.vercel.app
+raw = os.getenv("ALLOWED_ORIGINS", "")
+if raw:
+    for origin in raw.split(","):
+        origin = origin.strip()
+        if origin:
+            ALLOWED_ORIGINS.append(origin)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En prod: spécifier les domaines
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept", "Origin"],
+    max_age=600,
 )
 
+
+
 # Routers
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentification"])
+app.include_router(auth.router,         prefix="/api/v1/auth",         tags=["Authentification"])
 app.include_router(measurements.router, prefix="/api/v1/measurements", tags=["Mesures"])
-app.include_router(estimates.router, prefix="/api/v1/estimate", tags=["Estimations ML"])
-app.include_router(users.router, prefix="/api/v1/users", tags=["Utilisateurs"])
-app.include_router(apikeys.router, prefix="/api/v1/keys", tags=["Clés API"])
+app.include_router(estimates.router,    prefix="/api/v1/estimate",     tags=["Estimations ML"])
+app.include_router(users.router,        prefix="/api/v1/users",        tags=["Utilisateurs"])
 
 @app.get("/")
 def root():
     return {
         "app": "BioMetrics API",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "status": "running",
         "disclaimer": "Cet outil est uniquement à titre informatif. Non médical.",
-        "docs": "/api/docs"
+        "docs": "/api/docs",
+        "allowed_origins": ALLOWED_ORIGINS,  # Debug temporaire
     }
 
 @app.get("/health")
