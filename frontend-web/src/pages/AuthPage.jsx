@@ -1,10 +1,37 @@
 /**
  * Page Login/Register - BioMetrics
+ * v1.1 - Fix: gestion d'erreurs améliorée, messages clairs
  */
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function AuthPage({ onSuccess }) {
+// Traduction des erreurs API en messages lisibles
+function parseError(err) {
+  const status = err?.response?.status;
+  const detail = err?.response?.data?.detail;
+
+  if (!err?.response) {
+    return "Impossible de joindre le serveur. Vérifiez votre connexion internet.";
+  }
+  if (status === 400) {
+    if (typeof detail === 'string' && detail.includes('déjà utilisé')) {
+      return "Cette adresse email est déjà utilisée. Essayez de vous connecter.";
+    }
+    if (typeof detail === 'string') return detail;
+    return "Données invalides. Vérifiez le formulaire.";
+  }
+  if (status === 401) return "Email ou mot de passe incorrect.";
+  if (status === 422) return "Formulaire incomplet. Vérifiez tous les champs.";
+  if (status === 429) return "Trop de tentatives. Attendez 1 minute puis réessayez.";
+  if (status >= 500) return "Erreur serveur. L'API est peut-être en train de démarrer (30s).";
+  return detail || "Une erreur inattendue s'est produite.";
+}
+
+export default function AuthPage() {
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,26 +39,48 @@ export default function AuthPage({ onSuccess }) {
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, register } = useAuth();
+
+  const switchMode = (mode) => {
+    setIsLogin(mode === 'login');
+    setError('');
+  };
+
+  const validate = () => {
+    if (!email.includes('@') || !email.includes('.')) {
+      return "Adresse email invalide.";
+    }
+    if (password.length < 8) {
+      return "Le mot de passe doit contenir au moins 8 caractères.";
+    }
+    if (!isLogin && !name.trim()) {
+      return "Votre nom est requis.";
+    }
+    if (!isLogin && !consent) {
+      return "Vous devez accepter les conditions d'utilisation pour vous inscrire.";
+    }
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!isLogin && !consent) {
-      setError("Vous devez accepter les conditions d'utilisation");
+
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
       return;
     }
-    
+
     setLoading(true);
     try {
       if (isLogin) {
         await login(email, password);
       } else {
-        await register(email, password, name);
+        await register(email.trim(), password, name.trim());
       }
-      onSuccess?.();
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || "Erreur de connexion");
+      setError(parseError(err));
     } finally {
       setLoading(false);
     }
@@ -48,52 +97,60 @@ export default function AuthPage({ onSuccess }) {
 
         <div className="auth-tabs">
           <button
+            type="button"
             className={`auth-tab ${isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(true)}
+            onClick={() => switchMode('login')}
           >
             Connexion
           </button>
           <button
+            type="button"
             className={`auth-tab ${!isLogin ? 'active' : ''}`}
-            onClick={() => setIsLogin(false)}
+            onClick={() => switchMode('register')}
           >
             Créer un compte
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           {!isLogin && (
             <div className="form-group">
-              <label>Nom complet</label>
+              <label htmlFor="name">Nom complet</label>
               <input
+                id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ex: Landry TADAGBE"
-                required
+                autoComplete="name"
+                disabled={loading}
               />
             </div>
           )}
 
           <div className="form-group">
-            <label>Email</label>
+            <label htmlFor="email">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="votre@email.com"
-              required
+              autoComplete={isLogin ? 'username' : 'email'}
+              disabled={loading}
             />
           </div>
 
           <div className="form-group">
-            <label>Mot de passe</label>
+            <label htmlFor="password">Mot de passe</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Min. 8 caractères"
-              required
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
+              disabled={loading}
             />
           </div>
 
@@ -104,6 +161,7 @@ export default function AuthPage({ onSuccess }) {
                   type="checkbox"
                   checked={consent}
                   onChange={(e) => setConsent(e.target.checked)}
+                  disabled={loading}
                 />
                 J'accepte que mes données soient traitées à des fins de bien-être personnel.
                 <strong> Usage non médical.</strong> Je peux demander leur suppression à tout moment.
@@ -111,12 +169,27 @@ export default function AuthPage({ onSuccess }) {
             </div>
           )}
 
-          {error && <div className="form-error">❌ {error}</div>}
+          {error && (
+            <div className="form-error" role="alert">
+              ❌ {error}
+            </div>
+          )}
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? '⏳ Chargement...' : isLogin ? '🔐 Se connecter' : '🚀 Créer mon compte'}
+            {loading
+              ? '⏳ Chargement...'
+              : isLogin
+              ? '🔐 Se connecter'
+              : '🚀 Créer mon compte'}
           </button>
         </form>
+
+        {/* Message si l'API est froide (Railway cold start) */}
+        {loading && (
+          <p style={{ textAlign: 'center', fontSize: 12, color: '#94a3b8', marginTop: 8 }}>
+            Premier démarrage : jusqu'à 30 secondes possible…
+          </p>
+        )}
 
         <div className="auth-disclaimer">
           ⚠️ Cet outil est exclusivement à usage personnel et de bien-être.
