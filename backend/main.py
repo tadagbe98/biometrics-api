@@ -12,7 +12,6 @@ import bcrypt
 
 from routers import auth, measurements, estimates, users
 from database import engine, Base
-from middleware import RateLimitMiddleware, LoggingMiddleware, SecurityHeadersMiddleware
 
 Base.metadata.create_all(bind=engine)
 
@@ -58,9 +57,7 @@ app.add_middleware(
     max_age=600,
 )
 
-app.add_middleware(RateLimitMiddleware)
-app.add_middleware(LoggingMiddleware)
-app.add_middleware(SecurityHeadersMiddleware)
+
 
 # Routers
 app.include_router(auth.router,         prefix="/api/v1/auth",         tags=["Authentification"])
