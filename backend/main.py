@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
 from datetime import datetime
+import bcrypt
 
 from routers import auth, measurements, estimates, users
 from database import engine, Base
