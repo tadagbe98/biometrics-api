@@ -204,3 +204,86 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); }
   .manual-input select, .manual-input input,
   .form-group input { background: #0f172a; color: #f1f5f9; border-color: #334155; }
 }
+
+/* ── Nouveaux styles Dashboard v2 ── */
+
+.dashboard__header-right {
+  display: flex; align-items: center; gap: 10px;
+}
+.btn-refresh {
+  background: none; border: none; cursor: pointer;
+  font-size: 18px; padding: 6px 10px; border-radius: 8px;
+  transition: transform 0.3s;
+}
+.btn-refresh:hover { transform: rotate(180deg); }
+
+/* Bannière mobile */
+.mobile-banner {
+  background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);
+  border: 1px solid #c4b5fd; border-radius: var(--radius);
+  padding: 16px 20px; margin-bottom: 20px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.mobile-banner__content {
+  display: flex; gap: 14px; align-items: flex-start; flex: 1;
+}
+.mobile-banner__icon { font-size: 32px; flex-shrink: 0; }
+.mobile-banner__content strong { font-size: 15px; color: #4c1d95; display: block; margin-bottom: 4px; }
+.mobile-banner__content p { font-size: 13px; color: #5b21b6; margin-bottom: 4px; }
+.mobile-banner__hint { font-size: 12px; color: #7c3aed; }
+.mobile-banner__close {
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; color: #7c3aed; padding: 2px 6px; flex-shrink: 0;
+}
+
+/* Résumé santé */
+.health-summary {
+  border-radius: var(--radius); padding: 12px 18px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 500; margin-bottom: 20px;
+}
+.health-summary--ok { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.health-summary--alert { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+
+/* Sections */
+.section { margin-bottom: 32px; }
+.section-title {
+  font-size: 16px; font-weight: 700; color: var(--text);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.loading-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* Metric card améliorée */
+.metric-card__status { font-size: 12px; font-weight: 600; margin-top: 2px; }
+.metric-card__time { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+/* Graphiques améliorés */
+.chart-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+}
+.chart-header h3 { font-size: 14px; font-weight: 600; color: var(--text); }
+.chart-period { font-size: 12px; color: var(--text-muted); }
+.chart-ref { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.chart-empty {
+  height: 180px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  color: var(--text-muted); font-size: 14px;
+}
+.chart-empty span { font-size: 32px; }
+.chart-empty-hint { font-size: 12px; color: #94a3b8; }
+
+/* Légende capteurs */
+.sensors-legend {
+  background: white; border-radius: var(--radius);
+  padding: 20px 24px; box-shadow: var(--shadow);
+  border-top: 3px solid var(--primary);
+}
+.sensors-legend h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+.sensors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.sensor-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px; background: var(--bg); border-radius: 10px;
+}
+.sensor-icon { font-size: 28px; flex-shrink: 0; }
+.sensor-item strong { font-size: 13px; color: var(--text); display: block; margin-bottom: 4px; }
+.sensor-item p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
